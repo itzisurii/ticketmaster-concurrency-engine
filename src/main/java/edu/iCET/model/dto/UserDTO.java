@@ -1,22 +1,16 @@
-package edu.iCET.model.entity;
+package edu.iCET.model.dto;
 
-
-import jakarta.persistence.*;
 import lombok.*;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class User {
+public class UserDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String tier;
     private String email;
-
 }
