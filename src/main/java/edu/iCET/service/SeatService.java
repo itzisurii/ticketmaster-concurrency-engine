@@ -36,5 +36,9 @@ public class SeatService {
     }
 
 
+    public List<SeatDTO> getSeatsByEvent(Long eventId) {
+        List<Seat> seats = seatRepository.findByEventId(eventId);
+        return seats.stream().map(this::toDTO).collect(Collectors.toList());
+    }
 
 }
