@@ -29,6 +29,17 @@ public class SeatController {
         return ResponseEntity.ok(seats);
     }
 
+    // Hold a seat (POST since it's changing state)
+    @PostMapping("/{seatId}/hold")
+    public ResponseEntity<?> holdSeat(@PathVariable Long seatId, @RequestParam Long userId) {
+        try {
+            SeatDTO seat = seatService.holdSeat(seatId, userId);
+            return ResponseEntity.ok(seat);
+        } catch (SeatService.SeatLockedException e) {
+            return ResponseEntity.status(423).body(e.getMessage()); // 423 Locked
+        }
+    }
+
 
 
 }
