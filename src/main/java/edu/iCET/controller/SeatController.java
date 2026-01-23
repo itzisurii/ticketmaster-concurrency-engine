@@ -40,6 +40,17 @@ public class SeatController {
         }
     }
 
+    // Release a seat
+    @PostMapping("/{seatId}/release")
+    public ResponseEntity<?> releaseSeat(@PathVariable Long seatId, @RequestParam Long userId) {
+        try {
+            SeatDTO seat = seatService.releaseSeat(seatId, userId);
+            return ResponseEntity.ok(seat);
+        } catch (SeatService.SeatLockedException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+    }
+
 
 
 }
