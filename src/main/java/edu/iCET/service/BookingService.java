@@ -77,5 +77,21 @@ public class BookingService {
         return booking;
     }
 
+    public Booking createBooking(User user, Event event, Seat seat) {
+        PriceResult priceResult = priceCalculatorService.calculatePrice(user, event);
 
+        Booking booking = new Booking();
+        booking.setUserId(user.getId());
+        booking.setSeatId(seat.getId());
+        booking.setAmountPaid(priceResult.getFinalPrice()); // use getFinalPrice()
+        booking.setStatus("CONFIRMED"); // you can later add payment logic
+
+        // mark the seat as SOLD
+        seat.setStatus("SOLD");
+        seat.setHeldByUserId(null);
+        seat.setHoldExpiry(null);
+        seatRepository.save(seat);
+
+        return bookingRepository.save(booking);
+    }
 }
