@@ -37,4 +37,17 @@ public class EventService {
         return toDTO(event);
     }
 
+    public EventDTO saveEvent(EventDTO eventDTO) {
+
+        Event event = new Event();
+        event.setName(eventDTO.getName());
+        event.setBasePrice(eventDTO.getBasePrice());
+        event.setHighDemand(eventDTO.isHighDemand()); // use isHighDemand()
+        event.setEventDate(eventDTO.getEventDate());
+
+        Event saved = eventRepository.save(event);
+        return toDTO(saved);
+
+    }
+
 }
