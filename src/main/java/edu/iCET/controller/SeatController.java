@@ -51,6 +51,11 @@ public class SeatController {
         }
     }
 
-
+    // Check seat status
+    @GetMapping("/{seatId}/status")
+    public ResponseEntity<SeatDTO> checkSeatStatus(@PathVariable Long seatId) {
+        SeatDTO seat = seatService.getSeatStatus(seatId);
+        return ResponseEntity.ok(seat);
+    }
 
 }
