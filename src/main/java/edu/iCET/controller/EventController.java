@@ -25,5 +25,9 @@ public class EventController {
         return eventService.getEventById(id);
     }
 
+    @PostMapping("/save")
+    public EventDTO saveEvent(@RequestBody EventDTO eventDTO) {
+        return eventService.saveEvent(eventDTO);
+    }
 
 }
