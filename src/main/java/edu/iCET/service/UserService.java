@@ -42,5 +42,16 @@ public class UserService {
         );
     }
 
+    public void saveUser(User user) {
+        User user1 = new User(
+                user.getId(),
+                user.getName(),
+                user.getTier(),
+                user.getEmail()
+        );
+
+        userRepository.save(user1);
+    }
+
 
 }
