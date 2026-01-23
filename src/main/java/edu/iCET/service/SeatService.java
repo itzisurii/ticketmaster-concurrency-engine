@@ -75,4 +75,12 @@ public class SeatService {
         return toDTO(seat);
     }
 
+
+    public class SeatLockedException extends RuntimeException {
+        public SeatLockedException(String message) {
+            super(message);
+        }
+    }
+
+
 }
