@@ -82,5 +82,58 @@ public class SeatService {
         }
     }
 
+    @Transactional
+    public SeatDTO holdSeat(Long seatId, Long userId) {
+        // Pessimistic lock to prevent concurrent holds
+        Seat seat = seatRepository.findSeatForUpdate(seatId);
 
+        LocalDateTime now = LocalDateTime.now();
+
+        // Check if seat is AVAILABLE or previous hold expired
+        if ("AVAILABLE".equals(seat.getStatus()) ||
+                ("HELD".equals(seat.getStatus()) && seat.getHoldExpiry().isBefore(now))) {
+
+            seat.setStatus("HELD");
+            seat.setHeldByUserId(userId);
+            seat.setHoldExpiry(now.plusMinutes(1)); // 10-minute hold
+
+            Seat savedSeat = seatRepository.save(seat); // save to DB
+
+            // Convert to DTO
+            SeatDTO dto = new SeatDTO();
+            dto.setId(savedSeat.getId());
+            dto.setEventId(savedSeat.getEventId());
+            dto.setSeatNumber(savedSeat.getSeatNumber());
+            dto.setStatus(savedSeat.getStatus());
+            dto.setHeldByUserId(savedSeat.getHeldByUserId());
+            dto.setHoldExpiry(savedSeat.getHoldExpiry());
+
+            return dto;
+
+        } else {
+            if (seat.getHoldExpiry() == null) {
+                // seat is HELD but expiry missing, treat as AVAILABLE
+                seat.setStatus("AVAILABLE");
+                seat.setHeldByUserId(null);
+                seatRepository.save(seat);
+
+                // now retry hold
+                return holdSeat(seatId, userId);
+            }
+
+            // Seat is currently held by someone else
+            long secondsLeft = java.time.Duration.between(now, seat.getHoldExpiry()).getSeconds();
+
+            AuditLog log = new AuditLog();
+            log.setAction("FAILED_HOLD_ATTEMPT");
+            log.setUserId(userId);
+            log.setDetails("Seat " + seat.getSeatNumber() + " already held by user " + seat.getHeldByUserId());
+            log.setTimestamp(LocalDateTime.now());
+            auditLogRepository.save(log); // <-- you need to @Autowired AuditLogRepository
+
+            throw new SeatLockedException(
+                    "Seat is currently held. Try again in " + secondsLeft + " seconds."
+            );
+        }
+    }
 }
