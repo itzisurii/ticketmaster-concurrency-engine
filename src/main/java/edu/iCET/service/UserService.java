@@ -31,5 +31,16 @@ public class UserService {
         return userDTOS;
     }
 
+    public UserDTO getUserById(Long id) {
+        User byId = userRepository.getById(id);
+
+        return new UserDTO(
+                byId.getId(),
+                byId.getName(),
+                byId.getTier(),
+                byId.getEmail()
+        );
+    }
+
 
 }
