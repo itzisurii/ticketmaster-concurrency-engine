@@ -41,4 +41,23 @@ public class SeatService {
         return seats.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    public SeatDTO releaseSeat(Long seatId, Long userId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+
+        // Only the user who holds the seat can release it
+        if (!userId.equals(seat.getHeldByUserId())) {
+            throw new SeatLockedException("You cannot release this seat, it is held by another user.");
+        }
+
+        seat.setHeldByUserId(null);
+        seat.setStatus("AVAILABLE");
+        seat.setHoldExpiry(null);
+        seatRepository.save(seat);
+
+        return toDTO(seat);
+
+    }
+
+
 }
