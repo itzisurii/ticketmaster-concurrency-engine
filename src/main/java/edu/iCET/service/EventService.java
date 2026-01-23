@@ -31,5 +31,10 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    public EventDTO getEventById(Long id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        return toDTO(event);
+    }
 
 }
