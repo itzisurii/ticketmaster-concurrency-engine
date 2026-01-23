@@ -30,4 +30,9 @@ public class EventController {
         return eventService.saveEvent(eventDTO);
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return "Event deleted successfully!";
+    }
 }
