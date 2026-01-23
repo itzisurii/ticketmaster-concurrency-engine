@@ -59,5 +59,20 @@ public class SeatService {
 
     }
 
+    public SeatDTO getSeatStatus(Long seatId) {
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new IllegalArgumentException("Seat not found"));
+
+        // Automatically release expired holds
+        if ("HELD".equals(seat.getStatus()) && seat.getHoldExpiry() != null
+                && seat.getHoldExpiry().isBefore(LocalDateTime.now())) {
+            seat.setStatus("AVAILABLE");
+            seat.setHeldByUserId(null);
+            seat.setHoldExpiry(null);
+            seatRepository.save(seat);
+        }
+
+        return toDTO(seat);
+    }
 
 }
