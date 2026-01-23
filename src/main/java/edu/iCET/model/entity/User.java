@@ -17,6 +17,7 @@ public class User {
     private long id;
     private String name;
     private String tier;
+    @Column(unique = true)
     private String email;
 
 }
