@@ -31,5 +31,10 @@ public class UserController {
         return userService.getUserById(id);
     }
 
+    @PostMapping("/save")
+    public void saveUser(@RequestBody User user) {
+        userService.saveUser(user);
+    }
+
 
 }
